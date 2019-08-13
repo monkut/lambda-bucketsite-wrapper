@@ -23,6 +23,19 @@ jobs:
           name: install dependencies
           command: |
             pipenv sync --dev
+      - run:
+          name: prepare boto3 credentials and awscli
+          command: |
+            # install envsubst (provided by gettext-base)
+            sudo apt install gettext-base
+
+            # for deployment
+            pip install awscli
+
+            # prepare credentials
+            mkdir -p ~/.aws
+            cat ./infrastructure/aws/awscli/credentials.template | envsubst > ~/.aws/credentials
+            cat ./infrastructure/aws/awscli/config.template | envsubst > ~/.aws/config
       - save_cache:
           key: deps-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:

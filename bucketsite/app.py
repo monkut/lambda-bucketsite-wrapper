@@ -35,7 +35,7 @@ if not app.config["BASIC_AUTH_PASSWORD"] or not app.config["BASIC_AUTH_USERNAME"
     raise ValueError(
         f"Required environment variable not set: BASIC_AUTH_PASSWORD or BASIC_AUTH_USERNAME"
     )
-basic_auth = BasicAuth(app)
+basic_auth = BasicAuth(app)  # pylint: disable=invalid-name
 
 S3 = boto3.client("s3", endpoint_url=BOTO3_ENDPOINTS["s3"])
 

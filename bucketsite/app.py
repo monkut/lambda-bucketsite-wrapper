@@ -42,7 +42,7 @@ S3 = boto3.client("s3", endpoint_url=BOTO3_ENDPOINTS["s3"])
 
 @app.route("/<path:path>")
 @basic_auth.required
-def serve(path) -> Response:
+def serve(path: str) -> Response:
     """Serve collection html in defined SITE_DIRECTORY_RELPATH"""
     logger.debug(f"headers: {request.headers}")
     if os.path.isabs(path) or ".." in path:

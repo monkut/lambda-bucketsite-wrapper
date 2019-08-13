@@ -21,9 +21,9 @@ logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s [%(levelname)s] (%(name)s) %(funcName)s: %(message)s",
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
-app = Flask(__name__)
+app = Flask(__name__)  # pylint: disable=invalid-name
 
 app.config["BASIC_AUTH_USERNAME"] = BASIC_AUTH_USERNAME
 app.config["BASIC_AUTH_PASSWORD"] = BASIC_AUTH_PASSWORD

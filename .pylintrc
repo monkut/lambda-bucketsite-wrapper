@@ -142,7 +142,8 @@ disable=print-statement,
         no-self-use,
         no-name-in-module,
         missing-docstring,
-        bad-continuation
+        bad-continuation,
+        logging-fstring-interpolation
 
 
 # Enable the message, report, category or checker with the given id(s). You can

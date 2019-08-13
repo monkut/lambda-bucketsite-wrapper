@@ -5,7 +5,7 @@ from http import HTTPStatus
 from mimetypes import MimeTypes
 
 import boto3
-from flask import Flask, abort, request, send_file
+from flask import Flask, Response, abort, request, send_file
 from flask_basicauth import BasicAuth
 
 from .settings import (
@@ -42,7 +42,7 @@ S3 = boto3.client("s3", endpoint_url=BOTO3_ENDPOINTS["s3"])
 
 @app.route("/<path:path>")
 @basic_auth.required
-def serve(path):
+def serve(path) -> Response:
     """Serve collection html in defined SITE_DIRECTORY_RELPATH"""
     logger.debug(f"headers: {request.headers}")
     if os.path.isabs(path) or ".." in path:

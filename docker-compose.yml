@@ -1,0 +1,15 @@
+version: "3"
+services:
+  localstack:
+    image: localstack/localstack:0.10.1.2
+    container_name: "bucketsite-localstack-0.10.1.2"
+    ports:
+      - "4567-4593:4567-4593"
+      - "8080:8080"
+
+  wait:
+    image: waisbrot/wait
+    links:
+      - localstack
+    environment:
+      - TARGETS=localstack:4572

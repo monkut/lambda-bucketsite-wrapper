@@ -18,24 +18,32 @@ The integration of the APIGateway allows you to then integrate CUSTOM auth metho
 
 ## Deploy your site
 
-0. Copy your _STATIC SITE_ to the desired bucket
+1. Clone repository:
 
-1. create your zappa config:
+    ```bash
+    git clone https://github.com/monkut/lambda-bucketsite-wrapper.git mysite
+    ```
+
+2. create your zappa config:
+
+    > Create your target site bucket prior to creating config.
+    > `aws s3api create-bucket --bucket ${BUCKET_NAME} --create-bucket-configuration LocationConstraint=${AWS_DEFAULT_REGION}`
 
     ```json
     {
         "dev": {
-            "app_function": "app.app",
+            "app_function": "bucketsite.app.app",
             "aws_region": "ap-northeast-1",
             "profile_name": "YOUR_PROFILE",
             "project_name": "mysite",
             "runtime": "python3.7",
+            "keep_warm": false,
             "s3_bucket": "zappa-YOUR_FUNCTION_BUCKET",
             "environment_variables": {
                 "BASIC_AUTH_USERNAME": "YOUR_USERNAME",
                 "BASIC_AUTH_PASSWORD": "YOUR_PASSWORD",
-                "BUCKET_NAME": "YOUR_BUCKET",
-                "BUCKET_SITE_PREFIX": "YOUR PREFIX"
+                "BUCKET_NAME": "YOUR_SITE_BUCKET",
+                "BUCKET_SITE_PREFIX": "YOUR_SITE_BUCKET_PREFIX"
             }
         }
     }
@@ -51,5 +59,32 @@ The integration of the APIGateway allows you to then integrate CUSTOM auth metho
     pipenv run zappa deploy
     ```
 
+3. Prepare BASIC_AUTH tools:
 
-## Integrate BASIC AUTH
+    ```bash
+    cd ~
+    git clone https://github.com/monkut/lambda-basicauth-authorizer lambda-basicauth
+    cd lambda-basicauth
+    pipenv install
+    ```
+
+4. Deploy and install custom authorizer:
+
+    ```bash
+    pipenv shell
+    export BASIC_AUTH_USERNAME={YOUR USERNAME}
+    export BASIC_AUTH_PASSWORD={YOUR PASSWORD}
+    export PROJECTID={YOUR PROJECT IDENTIFIER}
+    export PROJECT_NAME={YOUR PROJECT NAME}  # same as defined in zappa_settings.json
+    export RESTAPI_ID=$(aws apigateway get-rest-apis --query "items[?starts_with(name, '${PROJECT_NAME}')].id" --output text)
+    make createfuncbucket
+    make deploy
+    make install
+    ```
+
+5. deploy site to bucket:
+
+    ```
+    export AWS_PROFILE={MY PROFILE}
+    aws s3 sync ${HTML_SOURCE} s3://${YOUR_SITE_BUCKET}/${YOUR_SITE_BUCKET_PREFIX}
+    ```

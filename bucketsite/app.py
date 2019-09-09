@@ -47,8 +47,10 @@ def serve(path: str) -> Response:
     logger.debug(f"headers: {request.headers}")
     if os.path.isabs(path) or ".." in path:
         abort(HTTPStatus.NOT_FOUND)
-
-    key = f"{BUCKET_SITE_PREFIX}{path}"
+    prefix = BUCKET_SITE_PREFIX
+    if prefix and not prefix.endswith("/"):
+        prefix += "/"
+    key = f"{prefix}{path}"
     try:
         response = S3.get_object(Bucket=BUCKET_NAME, Key=key)
     except S3.exceptions.NoSuchKey:

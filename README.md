@@ -1,10 +1,10 @@
 # lambda bucketsite wrapper
 
 Yes, s3 buckets provide _STATIC SITE_ operations easily enough.... if you want a public site.
-If you want to _protect_ a static site and provide login to a limited number of people things get a bit more difficult.1
+If you want to _protect_ a static site and provide login to a limited number of people things get a bit more difficult.
 
 This project allows you to serve your _STATIC SITE_ from a bucket through an API Gateway.
-The integration of the APIGateway allows you to then integrate CUSTOM auth methods as desired.1
+The integration of the APIGateway allows you to then integrate CUSTOM auth methods as desired.
 
 > Admittedly CUSTOM auth is not necessarily easy to integrate, but it's a start.
 
@@ -17,6 +17,13 @@ The integration of the APIGateway allows you to then integrate CUSTOM auth metho
 
 
 ## Deploy your site
+
+0. Create site s3 bucket:
+
+    ```bash
+    export YOUR_SITE_BUCKET={BucketName}
+    aws s3api create-bucket --bucket ${YOUR_SITE_BUCKET} --region ap-northeast-1 --create-bucket-configuration LocationConstraint=ap-northeast-1
+    ```
 
 1. Clone repository:
 
@@ -36,7 +43,7 @@ The integration of the APIGateway allows you to then integrate CUSTOM auth metho
             "aws_region": "ap-northeast-1",
             "profile_name": "YOUR_PROFILE",
             "project_name": "mysite",
-            "runtime": "python3.7",
+            "runtime": "python3.8",
             "keep_warm": false,
             "s3_bucket": "zappa-YOUR_FUNCTION_BUCKET",
             "environment_variables": {

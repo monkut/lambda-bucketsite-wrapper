@@ -14,7 +14,11 @@ mypy = "*"
 [packages]
 flask = "<1.2.0,>=1.1.1"
 flask-basicauth = "*"
-zappa = "<0.49.0,>=0.48.0"
+zappa = "*"
+boto3 = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
+
+[pipenv]
+allow_prereleases = true

@@ -59,7 +59,21 @@ def serve(path: str) -> Response:
 
     if path and "Body" in response:
         mimer = MimeTypes()
-        file_mimetype = mimer.guess_type(path)[0]
+        filename, *_ = path.split("?")
+        file_mimetype = mimer.guess_type(filename)[0]
+
+        if not file_mimetype:
+            font_mimetypes = {
+                ".woff": "font/woff",
+                ".woff2": "font/woff2",
+                ".ttf": "font/ttf",
+            }
+            for font_ext, font_mimetype in font_mimetypes.items():
+                if filename.endswith(font_ext):
+                    file_mimetype = font_mimetype
+                    break
+        if not file_mimetype:
+            logger.warning(f"Unable to determine mimetype: {filename} {path}")
         request_file = response["Body"]
         return send_file(request_file, add_etags=False, mimetype=file_mimetype)
     abort(HTTPStatus.NOT_FOUND)

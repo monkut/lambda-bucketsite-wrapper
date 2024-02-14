@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/app/
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
         environment:
           PIPENV_VENV_IN_PROJECT: true
       - image: localstack/localstack:0.10.1.2
@@ -12,7 +12,7 @@ jobs:
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
       - restore_cache:
           key: deps-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
@@ -42,7 +42,7 @@ jobs:
             - "/home/circleci/.aws"
             - "/home/circlci/.local"
             - "/usr/local/bin"
-            - "/usr/local/lib/python3.7/site-packages"
+            - "/usr/local/lib/python3.8/site-packages"
       - run:
           name: run tests
           command: |

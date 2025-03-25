@@ -67,6 +67,7 @@ def serve(path: str) -> Response:
                 ".woff": "font/woff",
                 ".woff2": "font/woff2",
                 ".ttf": "font/ttf",
+                ".webp": "image/webp",
             }
             for font_ext, font_mimetype in font_mimetypes.items():
                 if filename.endswith(font_ext):

@@ -33,7 +33,7 @@ logger.warning(app.config["BASIC_AUTH_PASSWORD"])
 app.config["BASIC_AUTH_FORCE"] = True
 if not app.config["BASIC_AUTH_PASSWORD"] or not app.config["BASIC_AUTH_USERNAME"]:
     raise ValueError(
-        f"Required environment variable not set: BASIC_AUTH_PASSWORD or BASIC_AUTH_USERNAME"
+        "Required environment variable not set: BASIC_AUTH_PASSWORD or BASIC_AUTH_USERNAME"
     )
 basic_auth = BasicAuth(app)  # pylint: disable=invalid-name
 

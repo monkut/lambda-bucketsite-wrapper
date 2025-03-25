@@ -5,7 +5,7 @@ from http import HTTPStatus
 from mimetypes import MimeTypes
 
 import boto3
-from flask import Flask, Response, abort, request, send_file
+from flask import Flask, Response, abort, request, send_file, redirect
 from flask_basicauth import BasicAuth
 
 from .settings import (
@@ -33,11 +33,12 @@ logger.warning(app.config["BASIC_AUTH_PASSWORD"])
 app.config["BASIC_AUTH_FORCE"] = True
 if not app.config["BASIC_AUTH_PASSWORD"] or not app.config["BASIC_AUTH_USERNAME"]:
     raise ValueError(
-        f"Required environment variable not set: BASIC_AUTH_PASSWORD or BASIC_AUTH_USERNAME"
+        "Required environment variable not set: BASIC_AUTH_PASSWORD or BASIC_AUTH_USERNAME"
     )
 basic_auth = BasicAuth(app)  # pylint: disable=invalid-name
 
 S3 = boto3.client("s3", endpoint_url=BOTO3_ENDPOINTS["s3"])
+MAX_LAMBDA_RESPONSE_BYTES = 6291456
 
 
 @app.route("/<path:path>")
@@ -67,6 +68,7 @@ def serve(path: str) -> Response:
                 ".woff": "font/woff",
                 ".woff2": "font/woff2",
                 ".ttf": "font/ttf",
+                ".webp": "image/webp",
             }
             for font_ext, font_mimetype in font_mimetypes.items():
                 if filename.endswith(font_ext):
@@ -75,5 +77,17 @@ def serve(path: str) -> Response:
         if not file_mimetype:
             logger.warning(f"Unable to determine mimetype: {filename} {path}")
         request_file = response["Body"]
+        content_length_bytes = response["ContentLength"]
+        if content_length_bytes > MAX_LAMBDA_RESPONSE_BYTES:
+            logger.warning(
+                f"File too large to serve, re-directing to s3 content: {filename} {path} {content_length_bytes}"
+            )
+            presigned_url = S3.generate_presigned_url(
+                ClientMethod="get_object",
+                Params={"Bucket": BUCKET_NAME, "Key": key},
+                ExpiresIn=3600,
+                HttpMethod="GET",
+            )
+            return redirect(presigned_url)
         return send_file(request_file, add_etags=False, mimetype=file_mimetype)
     abort(HTTPStatus.NOT_FOUND)

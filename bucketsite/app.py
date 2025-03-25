@@ -89,6 +89,5 @@ def serve(path: str) -> Response:
                 HttpMethod="GET",
             )
             return redirect(presigned_url)
-        else:
-            return send_file(request_file, add_etags=False, mimetype=file_mimetype)
+        return send_file(request_file, add_etags=False, mimetype=file_mimetype)
     abort(HTTPStatus.NOT_FOUND)
